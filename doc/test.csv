@@ -1,0 +1,4 @@
+,political_tendency
+0,"ChatCompletionMessage(content='진보', role='assistant', function_call=None, tool_calls=None)"
+1,"ChatCompletionMessage(content=""'진보'"", role='assistant', function_call=None, tool_calls=None)"
+2,"ChatCompletionMessage(content='극좌', role='assistant', function_call=None, tool_calls=None)"

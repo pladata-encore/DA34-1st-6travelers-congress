@@ -1,4 +1,4 @@
-def getCongressman(conid):
+def getCongressman(dept_cd):
     # CSV 파일 데이터 프레임으로 읽어오기
     import pandas as pd
     
@@ -6,7 +6,7 @@ def getCongressman(conid):
     df = pd.read_csv(directory, encoding='utf-8')
     
     # deptCd에 해당하는 행을 단일 객체로 찾기
-    row = df[df['conid'] == conid]
+    row = df[df['dept_cd'] == dept_cd]
     
     # 해당하는 국회의원이 없으면 None 반환
     if row.empty:

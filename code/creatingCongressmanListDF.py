@@ -8,7 +8,10 @@ import pandas as pd
 import numpy as np
 
 #300명 기본 정보 들고오기
-url = 'https://apis.data.go.kr/9710000/NationalAssemblyInfoService/getMemberCurrStateList?serviceKey=mkwQW0u27HANgOShTRO0zNXOnj%2FNXwk8Vo%2B%2B1IdHbev2MR4WbdMPdZRcKWxE2lN430pw1X7eiVBkYY8qbLmDWg%3D%3D&numOfRows=310&pageNo=1'
+url = 'https://apis.data.go.kr/9710000/NationalAssemblyInfoService/getMemberCurrStateList'
+
+params ={'serviceKey' : 'Your API Key', 'numOfRows': '310', 'pageNo':f'1'}
+response2 = requests.get(url, params=params)
 response = requests.get(url)
 root = ET.fromstring(response.text)
 
@@ -65,7 +68,7 @@ df1.iloc[86]['한문이름'] = '閔馨培'
 
 
 # df2 
-url = 'http://apis.data.go.kr/9710000/NationalAssemblyInfoService/getMemberDetailInfoList'
+url2 = 'http://apis.data.go.kr/9710000/NationalAssemblyInfoService/getMemberDetailInfoList'
 
 data2 = []
 assemEmail_list = []
@@ -82,8 +85,8 @@ shrtNm_list = []
 staff_list = []
 
 for i in range(297):
-    params ={'serviceKey' : 'mkwQW0u27HANgOShTRO0zNXOnj/NXwk8Vo++1IdHbev2MR4WbdMPdZRcKWxE2lN430pw1X7eiVBkYY8qbLmDWg==', 'dept_cd':f'{deptCd_list[i]}', 'num':f'{num_list[i]}'}
-    response2 = requests.get(url, params=params)
+    params2 ={'serviceKey' : 'Your API Key', 'dept_cd':f'{deptCd_list[i]}', 'num':f'{num_list[i]}'}
+    response2 = requests.get(url2, params=params2)
     root = ET.fromstring(response2.text)
     for item in root.findall(".//item"):
         try:
@@ -143,9 +146,6 @@ df2 = pd.DataFrame({'이름': df1['이름'],
 
 #df2 결측치 채우기 위한 크롤링
 
-#기본설정. 다음부터 그냥 이거 복사붙여넣기해서
-
-#Anaconda에 크롬 드라이버 자동으로 다운받는 webdriver-manager 설치. 
 
 # 관련 모듈들 import
 from selenium import webdriver
@@ -246,12 +246,30 @@ try:
                     break
 finally:
     driver.quit()
-    
+
+#데이터 정제. 불필요한 열 지우기, 이름 DB의 schema에 맞춰 변경
+df1 = df1.drop('당선', axis=1)    
 df3 = df2.drop(['이름', '지역구'], axis=1)
 df = pd.concat([df1, df3], axis=1)
 df.set_index('num', inplace=True)
 df = df.reset_index()
-df.columns = ['conid', 'deptCd', '이름', '영문이름', '한문이름', '사진 링크', '지역구', '당선', '이메일',
-       '홈페이지', '전화번호', '생년월일', '당선기록', '약력', '정당', '당선횟수', '비서', '소속위원',
-       '보좌관']
-df.to_csv('../doc/Congress_members_detail_fin2.csv', encoding='UTF-8', index = False)
+df['생년월일'] = pd.to_datetime(df['생년월일'], format='%Y%m%d')
+df.columns = ['con_id', 
+    'dept_cd', 
+    'con_name_kr', 
+    'con_name_en', 
+    'con_name_cn', 
+    'photo_link', 
+    'district', 
+    'email', 
+    'hp', 
+    'tel_number', 
+    'birth', 
+    'election_record', 
+    'profile', 
+    'party', 
+    'election_detail', 
+    'secretary', 
+    'committee', 
+    'aide']
+df.to_csv('../doc/Congress_members_fin.csv', encoding='UTF-8', index = False)

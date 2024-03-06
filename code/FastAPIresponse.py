@@ -4,13 +4,13 @@ import pandas as pd
 app = FastAPI()
 
 #작동 확인을 위한 DataFrame 정의
-targetEx = pd.DataFrame({'conid':[1111]})
+targetEx = pd.DataFrame({'dept_cd':[1111]})
 
 @app.get("/example/{conid}")
 def example(conid: int, response: Response):
     try:
         # 성공적인 조회를 가정
-        if conid in targetEx['conid'].values:
+        if conid in targetEx['dept_cd'].values:
             return {"message": "Successfully completed the task"}
         else:
             # 400 Bad Request: 주어진 conid가 targetEx에 존재하지 않음
